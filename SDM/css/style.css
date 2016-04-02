@@ -1,0 +1,73 @@
+h1{
+text-align:center;
+	font-family:Tauri, Arial, Helvetica, sans-serif;
+}
+
+a{
+	color:#4696D7;
+}
+
+body {
+	font-family:Tauri, Arial, Helvetica, sans-serif;
+}
+
+
+label:hover{
+	cursor:pointer;
+}
+
+table{
+	margin:auto;
+}
+
+.output{
+	font-size:12px;
+	font-weight:bold;
+	border:2px solid black;
+}
+
+#wrap1, #wrap2 {
+	float:left;
+	margin-left:auto;
+	margin-right:auto;
+	width:576px;
+}
+
+#controls{
+	width:150px;
+	float:left;
+	text-align:left;
+	font-size:12px;
+	margin-left:10px;
+	margin-top:-3px;
+}
+
+#container{
+	width:778px;
+	margin:0 auto;
+	text-align:center;
+}
+
+#sample, #sample100 {
+	cursor:pointer;
+	background:#E6B85C;
+	font-weight:bold;
+	font-size:16px;
+}
+
+#sample100:hover, #sample:hover, #reset:hover{
+	opacity:.7;
+}
+
+#reset {
+	cursor:pointer;
+	background:Gray;
+	font-weight:bold;
+	font-size:16px;
+}
+
+input[type='button']{
+	width:150px;
+	height:40px;
+	border: none !important;
+}

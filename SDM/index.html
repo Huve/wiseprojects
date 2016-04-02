@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<head>
+    <script type="text/javascript" src="../scripts/jquery-1.10.2.js"></script>
+	<script type="text/javascript" src="../scripts/jquery-ui-1.10.4/ui/jquery-ui.js"></script>
+    <script type="text/javascript" src="../scripts/d3/d3.min.js"></script>
+	 <script type="text/javascript" src="scripts/statistics.js"></script>
+	<script type="text/javascript" src="scripts/histogram.js"></script>
+    <script type="text/javascript" src="scripts/main.js"></script>
+    <link href="css/style.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" href="../scripts/jquery-ui-1.10.4/themes/base/jquery.ui.all.css">
+    <title>Sampling Distribution of the Mean</title>
+</head>
+<body>
+	<h1><a href="http://wise.cgu.edu">WISE</a> Sampling Distribution of the Mean</h1>
+	<div id="container">
+		<div id="wrap1">
+		</div>
+		
+		<br>
+		
+		<div id="controls">
+			<div style="width:130px;margin:auto;" id="slider" title="Slide this to adjust sample size"></div>
+			<input type="text" value="text" name="something" id="samplesize" size="10" style="text-align:left; font-weight:bold; border:0; font-size:24px; color:#b89349;" readonly>
+			<br><br>
+			
+			<label class="sm" for="smsample" title="Choose this to display each sample and its mean."><input type="radio" name="sm" value="sample" id="smsample"><b><font style="color:#b89349;">Sample</font> and <font style="color:red;">Mean</font></b></label><br>
+			<label class="sm" for="smmean" title="Choose this to track means from each sample."><input type="radio" name="sm" value="mean" id="smmean" checked><b><font style="color:red;">Means Only</font></b></label><br><br>
+
+			
+			<label class="pm" for="pmpop" title="Choose this to display the population distribution."><input type="checkbox" name="pm" value="pop" id="pmpop" checked><font style="color:#4696D7"><b>Population</b></font></label><br>
+			<label class="pm" for="pmsam" title="Choose this to display the sampling distribution of the mean."><input type="checkbox" name="pm" value="sam" id="pmsam" checked><font style="color:green"><b>SDM</b></font></label><br><br>
+			
+			<input type="button" value="Sample Once" id="sample" title="Click this to draw a sample."/><br><br>
+			<input type="button" value="Sample 100x" id="sample100" title="Click this to simulate drawing 100 samples."/><br><br>
+			<input type="button" value="Reset" id="reset" title="Reset"/><br><br>
+			
+			<div class="output">
+				<div>Last Mean = <span id="lastmean"></span></div>
+				<div>Samples = <span id="N">0</span></div>
+				<div>Standard Error = <span id="SEM"></span></div>
+			</div>
+			
+		</div>
+	</div>
+</body>
+
+</html>
