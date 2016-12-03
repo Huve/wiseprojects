@@ -1,10 +1,11 @@
 window.onload=(function(){
     /* TODO () Maybe randomly generate a set of data and plot it instead of this nonsense? */
     
+    
+    /**
+      * Initializes the demo
+      */
     function __init__(){
-        /**
-         * Initializes the demo
-         */
         WIDTH = window.innerWidth;
         HEIGHT = window.innerHeight;
         BINS = 1000;
@@ -17,8 +18,8 @@ window.onload=(function(){
         document.getElementById('sample').onclick = function() {    
            var sample = sampleData(POPULATION.data, 100);
            drawSampleData(POPULATION, sample);
+           displaySampleStats(sample);
         }
-        
     }
     
     
@@ -27,12 +28,26 @@ window.onload=(function(){
     }
     
     
+    /**
+      * Appends a child element to a parent.
+      *
+      * @param {string} child The content to be added in between the tags.
+      * @param {DOM Object} parent The element in the DOM to which the child is to be added.
+      * @param {string} tag The tag that will wrap the content.
+      */
+    function appendChildElement(child, parent, tag){
+        var node = document.createElement(tag);
+        var text = document.createTextNode(child);
+        node.appendChild(text);
+        parent.appendChild(node);
+    }
+    
+    /**
+      * Calculates the dimensions of the graph based on the window size.
+      * @param {int} width The width of the window.
+      * @return {array} graphDimensions - [x, y] dimensions of the graph. 
+      */
     function calculateGraphDimensions(width){
-        /**
-         * Calculates the dimensions of the graph based on the window size.
-         * @param {int} width - width of the window.
-         * @return {array} graphDimensions - [x, y] dimensions of the graph. 
-         */
         var graphDimensions = {};
         var wRatio = 1600;
         var hRatio = 900;
@@ -42,13 +57,13 @@ window.onload=(function(){
     }
     
     
+    /** 
+      * Creates an svg object to graph on.
+      * @param {string} elementId The id of the DOM object to append a graph.
+      * @param {int} w The width of the graph.
+      * @param {int} h The height of the graph.
+      */
     function createGraph(elementId, w, h){
-        /** 
-         * Creates an svg object to graph on.
-         * @param {string} elementId - id of the DOM object to append a graph.
-         * @param {int} w - width of the graph.
-         * @param {int} h - height of the graph.
-         */
         var graph = d3.select(elementId)
             .append('svg')
             .attr('width', w)
@@ -59,19 +74,20 @@ window.onload=(function(){
     }
     
     
+    /**
+      * A bar object representing a histogram bin.
+      * @param {svg} svg The svg object to plot the bar.
+      * @param {int} x The x position of the bar in pixels.
+      * @param {int} y The y position in pixels to plot the top of the bar.
+      * @param {int} w The width of the bar in pixels.
+      * @param {int} h The height of the bar in pixels.
+      */   
     function bar(c, x, y, w, h){
         /**
-         * A bar object representing a histogram bin.
-         * @param {svg} svg - svg object to plot the bar.
-         * @param {int} x - x position of the bar in pixels.
-         * @param {int} y - y position in pixels to plot the top of the bar.
-         * @param {int} w - width of the bar in pixels.
-         * @param {int} h - heigh of the bar in pixels.
-         */
+          * Draws the bar.
+          * @param {string} fill The hexcode or color name  to color the bar.
+          */
         this.draw = function(fill){
-            /**
-             * Draws the bar.
-             */
             var aBar = d3.select('svg').append('rect');
             aBar.attr('x', x)
             .attr('y', y)
@@ -85,17 +101,17 @@ window.onload=(function(){
     }
     
     
+    /**
+      * Creates a histogram of a distribution.
+      * @param {svg} svg The svg object to plot the bar on.
+      * @param {string} id The id of the histogram.
+      * @param {string} fill The color to fill the bars.
+      * @param {float} mean The mean of the distribution.
+      * @param {float} sd The standard deviation of the distributions.
+      * @param {int} numBins The number of bins to be draw in the histogram.
+      * @return {object} this The this histogram.
+      */
     function histogram(svg, id, fill, mean, sd, numBins){
-        /**
-          * Creates a histogram of a distribution.
-          * @param {svg} svg - svg object to plot the bar on.
-          * @param {string} id - id of the histogram.
-          * @param {string} fill - color to fill the bars.
-          * @param {float} mean - mean of the distribution.
-          * @param {float} sd - standard deviation of the distributions.
-          * @param {int} numBins - number of bins to be draw in the histogram.
-          * @return {object} this - this histogram.
-        */
         this.id = id;
         this.fill = fill;
         this.mean = mean;
@@ -127,14 +143,14 @@ window.onload=(function(){
     }
     
     
+    /**
+      * Calculates the y values of the probability density function.
+      * @param {float} mean The mean of the distribution.
+      * @param {float} sd The standard deviation of the distribution.
+      * @param {float} iValue The (nth) value position value associated with the bar.
+      * @return {float} height The y value of the given x for the normal PDF.
+      */
     function calculateNormalDistribution(mean, sd, iValue){
-        /**
-          * Calculates the y values of the probability density function.
-          * @param {float} mean - mean of the distribution.
-          * @param {float} sd - standard deviation of the distribution.
-          * @param {float} iValue - ?
-          * @return {float} height - y value of the given x for the normal PDF.
-          */
         var diff = iValue - mean;
 		var numerator = Math.pow(diff, 2);
 		var denominator = 2 * (Math.pow(sd, 2));
@@ -146,17 +162,17 @@ window.onload=(function(){
     }
     
     
+    /**
+      * Samples uniformly from the bin to create real data.
+      * 
+      * Should not be used with large bin sizes, as will not technically be normal.
+      * 
+      * @param {int} n The frequency of values in the bin; the number of cases to be drawn.
+      * @param {float} minBinValue The minimum numeric value of the bin.
+      * @param {float} binSize The width of the bin.
+      * @return {array} data A uniformly sampled random set of data from the bin.
+      */
     function createDataFromDistribution(n, minBinValue, binSize){
-        /**
-          * Samples uniformly from the bin to create real data.
-          * 
-          * Should not be used with large bin sizes, as will not technically be normal.
-          * 
-          * @param {int} n - the frequency of values in the bin; the number of cases to be drawn.
-          * @param {float} minBinValue - the minimum numeric value of the bin.
-          * @param {float} binSize - the width of the bin.
-          * @return {array} data - a uniformly sampled random set of data from the bin.
-          */
         var data = [];
         var probability = (n < 1) ? 1 : n
         for(var s = 0; s < n; s++){
@@ -164,15 +180,42 @@ window.onload=(function(){
         }
         return data; 
     }
+    
+    
+    /**
+      * Removes all children from a container.
+      *
+      * @param {string} container The id of the container.
+      */
+    function clearContainer(container){
+       var parent = document.getElementById(container);
+       while(parent.firstChild){
+           parent.removeChild(parent.firstChild);
+       }
+    }
+    
+    
+    /**
+      * Dislpays statistics of the sample.
+      * 
+      */
+    function displaySampleStats(sample){
+        var meanText = "Sample mean: " +  roundNumber(calculateAverage(sample), 2);
+        var sdText = "Sample sd: " + roundNumber(calculateStandardDev(sample), 2);
+        var container = document.getElementById("stats");
+        clearContainer("stats");
+        appendChildElement(meanText, container, "div");
+        appendChildElement(sdText, container, "div");
+    }
      
+    /**
+      * Samples data randomly from an array.
+      *
+      * @param {array} data The data to be sampled from.
+      * @param {int} n The size of the desired sample.
+      * @return {array} sample An array of the sampled data.
+      */
     function sampleData(data, n){
-        /**
-          * Samples data randomly from an array.
-          *
-          * @param {array} data - the data to be sampled from.
-          * @param {int} n - the size of the desired sample.
-          * @return {array} sample - an array of the sampled data.
-          */
           var sample = [];
           for (var i = 0; i < n; i++){
             var r = Math.round(Math.random() * (data.length-1));
@@ -180,18 +223,18 @@ window.onload=(function(){
 			sample.push(choice);
           }
           console.log(sample);
-          console.log(calculateAverage(sample));
           return sample;
     }
     
+    
+    /**
+      * Bins each datapoint based on a histogram's bin sizes and values.
+      *
+      * @param {object} histogram The histogram for which binning is to be applied.
+      * @param {array} data The data to be binned.
+      * @return {array} allBins An array with the frequency (height) of each bin.
+      */
     function getBins(histogram, data){
-        /**
-          * Bins each datapoint based on a histogram's bin sizes and values.
-          *
-          * @param {object} histogram - histogram for which binning is to be applied.
-          * @param {array} data - data to be binned.
-          * @return {array} allBins - an array with the frequency (height) of each bin.
-          */
         var allBins = new Array(BINS).fill(0);  
         for (var i = 0; i < data.length; i++){
             var bin = Math.floor((data[i] - histogram.minBin) / histogram.binValue);
@@ -200,15 +243,16 @@ window.onload=(function(){
         return allBins;  
     }
     
+    
+    /**
+      * Draws a histogram based on frequencies of each value.
+      *
+      * @param {object} svg The svg object to draw the histogram on.
+      * @param {array} sampleBins The frequencies associated with each bin in the histogram.
+      * @param {string} color The color to draw the histogram.
+      * @return draws the histogram on the svg.
+      */
     function drawSampleData(histogram, sampleBins, color="red"){
-        /**
-          * Draws a histogram based on frequencies of each value.
-          *
-          * @param {object} svg - svg object to draw the histogram on.
-          * @param {array} sampleBins - frequency of each bin in the histogram.
-          * @param {string} color - color to draw the histogram.
-          * @return draws the histogram on the svg.
-          */
           clearSample();
           var binnedSample = getBins(POPULATION, sampleBins);
           for (var i = 0; i < binnedSample.length; i++){
@@ -235,8 +279,25 @@ window.onload=(function(){
         return(avg);
     }
     
+    
+    /**
+      * Calculates the standard deviation of an array of data.
+      *
+      * @param {array} data The data.
+      * @return {float} sd The standard deviation of the data.
+      */
     function calculateStandardDev(data){
-        /*TODO() */
+        var mean = calculateAverage(data);
+	    var n = data.length;
+	    var sum = 0;
+	    for (i = 0; i < data.length; i++){
+            var x = data[i] - mean;
+            var xs = x * x;
+		    sum += xs
+	    }
+        var sd = Math.sqrt((sum / n));
+	    sd = +(Math.round(sd + "e+2") + "e-2");
+	    return sd;
     }
     
     
@@ -246,6 +307,18 @@ window.onload=(function(){
     }
     
     function keyHandler(e){
+    }
+    
+    /**
+      * Rounds a number to a certain number of decimal places.
+      *
+      * @param {numeric} number The number to be rounded.
+      * @param {integer} places The number of decimal places to be rounded to.
+      * @return {numeric} roundedNumber The original number rounded to the number of places.
+      */
+    function roundNumber(number, places){
+        var roundedNumber = Math.round(number * Math.pow(10, places)) / Math.pow(10, places);
+        return roundedNumber;
     }
     
     
