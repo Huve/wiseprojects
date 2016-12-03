@@ -158,7 +158,7 @@ function displayHundredMeans(means,graph,bins){
 			.attr("id","samplemean");
 	
 		rects.attr("x", function(d, i) {
-						return (i*8-1);
+						return (i);
 			})
 			.attr("y", function(d, i){
 				return $("#graph1").height()-gmap(d,150,$("#graph1").height());
@@ -179,7 +179,7 @@ function displayHundredMeans(means,graph,bins){
 			rects.data(data).enter();
 			rects.transition()
 			.attr("x", function(d, i) {
-					return (i*8-1);
+					return (i);
 			})
 			.attr("y", function(d, i){
 				return $("#graph1").height()-gmap(d,150,$("#graph1").height());

@@ -87,7 +87,8 @@ function gmap(x,xmax,omax){
 }
 
 
-function calcNormal(data,mean,sd,n,sdm,histogram,trudata){
+
+/*function calcNormal(data,mean,sd,n,sdm,histogram,trudata){
 	var normal=[];
 	var max_height=50;
 	if (sdm==true){
@@ -119,4 +120,56 @@ function calcNormal(data,mean,sd,n,sdm,histogram,trudata){
 		}
 	}
 	return normal;
+}*/
+
+
+
+function calcNormal(data,mean,sd,n,sdm,histogram,trudata){
+	var normal=[];
+	var max_height=50;
+	if (sdm==true){
+			var SE = sd / Math.sqrt(n);
+			var max_height=10;
+		}
+		else{ var SE=sd; }
+	for (i=0;i<data.length;i++){
+
+		var diff = i - mean;
+		var numerator=Math.pow(diff,2);
+		var denominator=2*(Math.pow(SE,2));
+		var exponent=-(numerator/denominator);
+		var eterm=Math.pow(Math.E,exponent);
+		var fraction=1/((Math.sqrt(6.2832)));
+		var height = fraction*eterm;
+		
+        var i2 = i * 2.7777777
+        var mean2 = 100
+        var sd2 = 10
+        var diff2 = i2 - mean2;
+		var numerator2=Math.pow(diff,2);
+		var denominator2=2*(Math.pow(SE,2));
+		var exponent2=-(numerator/denominator);
+		var eterm2=Math.pow(Math.E,exponent);
+		var fraction2=1/((Math.sqrt(6.2832)));
+		var height2 = fraction*eterm;
+        
+        if (!sdm){
+		
+		}
+			else{ var max_height=40*(4.8/SE); }
+			
+		height=height*max_height;
+		normal.push(height);
+		if (trudata){
+			for (x=0;x<height2;x++){
+				var datapoint=Math.random()+i*2;
+				histogram.true_data.push(datapoint);
+			}
+		}
+	}
+	return normal;
 }
+
+
+
+
