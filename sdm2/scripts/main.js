@@ -20,8 +20,12 @@ window.onload=(function(){
         
         document.getElementById('sample').onclick = function() {    
            var sample = sampleData(POPULATION.data, 100);
-           drawSampleData(svg, sample);
-           displaySampleStats(sample);
+           var sampleMean = roundNumber(calculateAverage(sample), 2);
+           var sampleSD = roundNumber(calculateStandardDev(sample), 2);
+           drawSampleData(svg, sample); 
+           drawSampleMean(svg, sampleMean);
+           displaySampleStats(sampleMean, sampleSD);
+
         }
     }
     
@@ -202,15 +206,18 @@ window.onload=(function(){
     /**
       * Dislpays statistics of the sample.
       * 
+      * @param {float} sampleMean The mean of the sample.
+      * @param {float} sampleSD The standard deviation of the sample.
       */
-    function displaySampleStats(sample){
-        var meanText = "Sample mean: " +  roundNumber(calculateAverage(sample), 2);
-        var sdText = "Sample sd: " + roundNumber(calculateStandardDev(sample), 2);
+    function displaySampleStats(sampleMean, sampleSD){
+        var meanText = "Sample mean: " +  sampleMean;
+        var sdText = "Sample sd: " + sampleSD;
         var container = document.getElementById("stats");
         clearContainer("stats");
         appendChildElement(meanText, container, "div");
         appendChildElement(sdText, container, "div");
     }
+     
      
     /**
       * Samples data randomly from an array.
@@ -256,20 +263,37 @@ window.onload=(function(){
       * @return draws the histogram on the svg.
       */
     function drawSampleData(svg, sampleBins, color="orange"){
-          clearFromGraph(".sample");
-          var binnedSample = getBins(POPULATION, sampleBins);
-          for (var i = 0; i < binnedSample.length; i++){
-              var width = graphDimensions['width'] / BINS;
-              var x = i * width;
-              var y = graphDimensions['height'] - binnedSample[i] * 10;
-              var height = graphDimensions['height'] - y;
-        
-              try{
-                var b = new bar("sample", x, y, width, height, svg);
-                b.draw(color);
-              }
-              catch(e){ };
+      clearFromGraph(".sample");
+      var binnedSample = getBins(POPULATION, sampleBins);
+      for (var i = 0; i < binnedSample.length; i++){
+          var dimensions = getPointDimensions(binnedSample[i], i);
+          try{
+            var b = new bar("sample", dimensions.x, dimensions.y, dimensions.width, dimensions.height, svg);
+            b.draw(color);
           }
+          catch(e){ };
+      }
+    }
+    
+    
+    /**
+      * Gets the dimensions of a sampled point in the graph.
+      *
+      * @param {integer} magnitude The number of times this point occurs.
+      * @param {integer} pixels The pixel position of the point.
+      * @return {object} dimensions of the point {x:int, y:int, height:int, width:int}
+      */
+    function getPointDimensions(magnitude, pixels){
+        var dimensions = {
+            x: 0,
+            y: 0,
+            height: 0,
+            width: graphDimensions['width'] / BINS
+        }
+        dimensions.x = pixels * dimensions.width;
+        dimensions.y = graphDimensions['height'] - magnitude * 10;
+        dimensions.height = graphDimensions['height'] - dimensions.y
+        return dimensions;
     }
     
     
@@ -277,11 +301,14 @@ window.onload=(function(){
       * Draws the sample mean on the graph.
       *
       * @param {float} mean The sample mean.
-      * @param {SVG Object} graph The graph object on which to draw the mean.
+      * @param {SVG Object} svg The graph object on which to draw the mean.
       */
-    function drawSampleMean(mean, graph){
-        var meanBar = new bar("sample", x, 1, width, height);
-        meanBar.draw("red");
+    function drawSampleMean(svg, mean){
+        clearFromGraph(".samplemean");
+        var magnitude = Math.floor((mean - POPULATION.minBin) / POPULATION.binValue);
+        var dimensions = getPointDimensions(1, magnitude);
+        var meanBar = new bar("samplemean", dimensions.x, dimensions.y, dimensions.width, dimensions.height, svg);
+        meanBar.draw("red");    
     }
     
     
