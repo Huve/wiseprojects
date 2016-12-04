@@ -11,15 +11,17 @@ window.onload=(function(){
         BINS = 1000;
         POP_MEAN = 100;
         POP_SD = 5;
-        SAMPLE_SIZE = 100;
+        DEFAULT_SAMPLE_SIZE = 25 
+        document.getElementById("samplesize").value = DEFAULT_SAMPLE_SIZE;
         graphDimensions = calculateGraphDimensions(WIDTH);
         console.log(graphDimensions);
         svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
-        sem = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(SAMPLE_SIZE), numBins=BINS);
+        sem = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
         
-        document.getElementById('sample').onclick = function() {    
-           var sample = sampleData(POPULATION.data, 100);
+        document.getElementById('sample').onclick = function() {
+           n = document.getElementById("samplesize").value;            
+           var sample = sampleData(POPULATION.data, n);
            var sampleMean = roundNumber(calculateAverage(sample), 2);
            var sampleSD = roundNumber(calculateStandardDev(sample), 2);
            drawSampleData(svg, sample); 
