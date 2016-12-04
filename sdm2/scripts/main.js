@@ -9,15 +9,18 @@ window.onload=(function(){
         WIDTH = window.innerWidth;
         HEIGHT = window.innerHeight;
         BINS = 1000;
+        POP_MEAN = 100;
+        POP_SD = 5;
+        SAMPLE_SIZE = 100;
         graphDimensions = calculateGraphDimensions(WIDTH);
         console.log(graphDimensions);
-        svg = createGraph("#graph", graphDimensions.width, graphDimensions.height);
-        POPULATION = new histogram(svg, id="population", fill="steelblue", mean=100, sd=1, numBins=BINS);
-        sem = new histogram(svg, id="sem", fill="green", mean=100, sd=.2, numBins=BINS);
+        svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
+        POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
+        sem = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(SAMPLE_SIZE), numBins=BINS);
         
         document.getElementById('sample').onclick = function() {    
            var sample = sampleData(POPULATION.data, 100);
-           drawSampleData(POPULATION, sample);
+           drawSampleData(svg, sample);
            displaySampleStats(sample);
         }
     }
@@ -42,6 +45,7 @@ window.onload=(function(){
         parent.appendChild(node);
     }
     
+    
     /**
       * Calculates the dimensions of the graph based on the window size.
       * @param {int} width The width of the window.
@@ -51,7 +55,7 @@ window.onload=(function(){
         var graphDimensions = {};
         var wRatio = 1600;
         var hRatio = 900;
-        graphDimensions['width'] = Math.min(width - 200, 800);
+        graphDimensions['width'] = Math.min(width - 200, 1200);
         graphDimensions['height'] = Math.min((graphDimensions.width * hRatio) / wRatio, 450);
         return graphDimensions;
     }
@@ -64,31 +68,31 @@ window.onload=(function(){
       * @param {int} h The height of the graph.
       */
     function createGraph(elementId, w, h){
-        var graph = d3.select(elementId)
+        var graph = d3.select("#" + elementId)
             .append('svg')
             .attr('width', w)
             .attr('height', h)
             .attr('id', elementId + 'graph')
-            .style('background-color', 'light gray');
+            .style('background-color', 'white');
         return graph;
     }
     
     
     /**
       * A bar object representing a histogram bin.
-      * @param {svg} svg The svg object to plot the bar.
+      * @param {svg} svg The class of this bar to be drawn.
       * @param {int} x The x position of the bar in pixels.
       * @param {int} y The y position in pixels to plot the top of the bar.
       * @param {int} w The width of the bar in pixels.
       * @param {int} h The height of the bar in pixels.
       */   
-    function bar(c, x, y, w, h){
+    function bar(c, x, y, w, h, svg){
         /**
           * Draws the bar.
           * @param {string} fill The hexcode or color name  to color the bar.
           */
         this.draw = function(fill){
-            var aBar = d3.select('svg').append('rect');
+            var aBar = svg.append('rect');
             aBar.attr('x', x)
             .attr('y', y)
             .attr('width', w)
@@ -121,7 +125,7 @@ window.onload=(function(){
         this.heights = [];
         this.data = [];
         this.barWidth = graphDimensions.width / numBins;
-        this.binValue = .000005 * numBins; /*(6 / numBins) * sd;*/
+        this.binValue = (6 / numBins) * POP_SD; // .000005 * numBins; /*(6 / numBins) * sd;*/
         this.minBin = mean - (numBins / 2) * this.binValue;
         for (var i = 0; i < numBins; i++){
             var iValue = i * this.binValue + this.binValue + this.minBin;
@@ -130,7 +134,7 @@ window.onload=(function(){
             this.heights.push(distValue);
             var y = graphDimensions.height - distValue;
             var height = graphDimensions.height - y;
-            var b = new bar("histogram", x, y, this.barWidth, height);
+            var b = new bar("histogram", x, y, this.barWidth, height, svg);
             this.bars.push(b);
             b.draw(fill);
             var binData = createDataFromDistribution(distValue, iValue, this.binValue);
@@ -222,7 +226,6 @@ window.onload=(function(){
 			var choice = data[r];
 			sample.push(choice);
           }
-          console.log(sample);
           return sample;
     }
     
@@ -252,8 +255,8 @@ window.onload=(function(){
       * @param {string} color The color to draw the histogram.
       * @return draws the histogram on the svg.
       */
-    function drawSampleData(histogram, sampleBins, color="red"){
-          clearSample();
+    function drawSampleData(svg, sampleBins, color="orange"){
+          clearFromGraph(".sample");
           var binnedSample = getBins(POPULATION, sampleBins);
           for (var i = 0; i < binnedSample.length; i++){
               var width = graphDimensions['width'] / BINS;
@@ -262,15 +265,33 @@ window.onload=(function(){
               var height = graphDimensions['height'] - y;
         
               try{
-                var b = new bar("sample", x, y, width, height); /* TODO(): SVG param not necessary here */
+                var b = new bar("sample", x, y, width, height, svg);
                 b.draw(color);
               }
               catch(e){ };
           }
     }
     
+    
+    /**
+      * Draws the sample mean on the graph.
+      *
+      * @param {float} mean The sample mean.
+      * @param {SVG Object} graph The graph object on which to draw the mean.
+      */
+    function drawSampleMean(mean, graph){
+        var meanBar = new bar("sample", x, 1, width, height);
+        meanBar.draw("red");
+    }
+    
+    
+    /**
+      * Calculates the average of an array of values.
+      *
+      * @param {array} data The data to calculate the average from.
+      * @return {float} avg The average of the array.
+      */
     function calculateAverage(data){
-        /*TODO () */
         var sum = 0;
         for (var i = 0; i < data.length; i++){
             sum += data[i];
@@ -300,11 +321,15 @@ window.onload=(function(){
 	    return sd;
     }
     
-    
-    function clearSample(){
-        /* TODO()*/
-        var sampleBars = d3.selectAll(".sample").remove();
+    /**
+      * Clears all elements of a specific identifer from the graph.
+      * 
+      * @param {string} identifier The class, id, or SVG type of the element.
+      */
+    function clearFromGraph(identifier){
+        var selection = d3.selectAll(identifier).remove();
     }
+   
     
     function keyHandler(e){
     }
