@@ -6,14 +6,12 @@ window.onload=(function(){
       * Initializes the demo
       */
     function __init__(){
-        WIDTH = window.innerWidth;
-        HEIGHT = window.innerHeight;
         BINS = 1000;
         POP_MEAN = 100;
         POP_SD = 5;
         DEFAULT_SAMPLE_SIZE = 25 
         document.getElementById("samplesize").value = DEFAULT_SAMPLE_SIZE;
-        graphDimensions = calculateGraphDimensions(WIDTH);
+        graphDimensions = calculateGraphDimensions(window.innerWidth);
         console.log(graphDimensions);
         svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
@@ -167,7 +165,7 @@ window.onload=(function(){
 		var exponent = -(numerator/denominator);
 		var eterm = Math.pow(Math.E, exponent);
         var fraction = 1 / ((Math.sqrt(2 * 3.14 * Math.pow(sd, 2))));
-		var height = fraction * eterm * (HEIGHT/5);
+		var height = fraction * eterm * (window.innerHeight/5);
         return height;
     }
     
