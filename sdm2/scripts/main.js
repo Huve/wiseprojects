@@ -6,13 +6,17 @@ window.onload=(function(){
       * Initializes the demo
       */
     function __init__(){
+        // Initial parameter values.
         BINS = 1000;
         POP_MEAN = 100;
-        POP_SD = 5;
+        POP_SD = 10;
         DEFAULT_SAMPLE_SIZE = 25 
+        
+        // Set initial parameter values.
         document.getElementById("samplesize").value = DEFAULT_SAMPLE_SIZE;
+        
+        // Create the histograms.
         graphDimensions = calculateGraphDimensions(window.innerWidth);
-        console.log(graphDimensions);
         svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
         sem = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
@@ -146,7 +150,9 @@ window.onload=(function(){
                 this.data.push(binData[n]);
             }
         }
-        /* var sum = this.heights.reduce((pv, cv) => pv+cv, 0);  Verify similar area under curve */
+        // Verify similar area under curve
+        /*var sum = this.heights.reduce((pv, cv) => pv+cv, 0); 
+        console.log(sum);*/
         return this;
     }
     
@@ -165,7 +171,7 @@ window.onload=(function(){
 		var exponent = -(numerator/denominator);
 		var eterm = Math.pow(Math.E, exponent);
         var fraction = 1 / ((Math.sqrt(2 * 3.14 * Math.pow(sd, 2))));
-		var height = fraction * eterm * (window.innerHeight/5);
+		var height = fraction * eterm * (window.innerHeight);
         return height;
     }
     
