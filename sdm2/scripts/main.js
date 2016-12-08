@@ -1,7 +1,4 @@
-window.onload=(function(){
-    /* TODO () Maybe randomly generate a set of data and plot it instead of this nonsense? */
-    
-    
+window.onload=(function(){ 
     /**
       * Initializes the demo
       */
@@ -10,7 +7,7 @@ window.onload=(function(){
         BINS = 1000;
         POP_MEAN = 100;
         POP_SD = 10;
-        DEFAULT_SAMPLE_SIZE = 25 
+        DEFAULT_SAMPLE_SIZE = 25; 
         
         // Set initial parameter values.
         document.getElementById("samplesize").value = DEFAULT_SAMPLE_SIZE;
@@ -34,7 +31,7 @@ window.onload=(function(){
     }
     
     
-    function adjustDistribution(){
+    function adjustDistribution(distribution){
         /* TOOD */
     }
     
@@ -99,7 +96,7 @@ window.onload=(function(){
           * Draws the bar.
           * @param {string} fill The hexcode or color name  to color the bar.
           */
-        this.draw = function(fill){
+        this.draw = function(fill, opacity=.5){
             var aBar = svg.append('rect');
             aBar.attr('x', x)
             .attr('y', y)
@@ -107,7 +104,7 @@ window.onload=(function(){
             .attr('height', h)
             .attr('fill', fill)
             .attr('class', c)
-            .style({'opacity': .5});
+            .style({'opacity': opacity});
             aBar.transition().attr('y', y + Math.random(0, 1)).duration(1000);
         }
     }
@@ -275,7 +272,7 @@ window.onload=(function(){
           var dimensions = getPointDimensions(binnedSample[i], i);
           try{
             var b = new bar("sample", dimensions.x, dimensions.y, dimensions.width, dimensions.height, svg);
-            b.draw(color);
+            b.draw(color, opacity=1);
           }
           catch(e){ };
       }
@@ -314,7 +311,7 @@ window.onload=(function(){
         var magnitude = Math.floor((mean - POPULATION.minBin) / POPULATION.binValue);
         var dimensions = getPointDimensions(1, magnitude);
         var meanBar = new bar("samplemean", dimensions.x, dimensions.y, dimensions.width, dimensions.height, svg);
-        meanBar.draw("red");    
+        meanBar.draw("red", opacity=1);    
     }
     
     
