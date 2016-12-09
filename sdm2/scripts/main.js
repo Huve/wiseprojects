@@ -16,7 +16,7 @@ window.onload=(function(){
         graphDimensions = calculateGraphDimensions(window.innerWidth);
         svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
-        sem = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
+        SDM = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
         
         document.getElementById('sample').onclick = function() {
            n = document.getElementById("samplesize").value;            
@@ -28,13 +28,12 @@ window.onload=(function(){
            displaySampleStats(sampleMean, sampleSD);
 
         }
+        
+        var sampleBox = document.getElementById("samplesize");
+        sampleBox.addEventListener("keypress", keyHandler, false)
     }
     
-    
-    function adjustDistribution(distribution){
-        /* TOOD */
-    }
-    
+ 
     
     /**
       * Appends a child element to a parent.
@@ -97,16 +96,26 @@ window.onload=(function(){
           * @param {string} fill The hexcode or color name  to color the bar.
           */
         this.draw = function(fill, opacity=.5){
-            var aBar = svg.append('rect');
-            aBar.attr('x', x)
+            this.bar = svg.append('rect');
+            this.bar.attr('x', x)
             .attr('y', y)
             .attr('width', w)
             .attr('height', h)
             .attr('fill', fill)
             .attr('class', c)
             .style({'opacity': opacity});
-            aBar.transition().attr('y', y + Math.random(0, 1)).duration(1000);
         }
+        /**
+          * Adjust the y value of the bar.
+          * @param {numeric} y The new y value of the bar.
+          * @param {numeric} h The new required height of the bar.
+          */
+        this.adjustY = function(y, h){
+            this.bar.transition()
+            .attr('y', y)
+            .attr('height', h); 
+        }
+        return this;
     }
     
     
@@ -132,6 +141,7 @@ window.onload=(function(){
         this.barWidth = graphDimensions.width / numBins;
         this.binValue = (6 / numBins) * POP_SD; // .000005 * numBins; /*(6 / numBins) * sd;*/
         this.minBin = mean - (numBins / 2) * this.binValue;
+        this.numBins = numBins;
         for (var i = 0; i < numBins; i++){
             var iValue = i * this.binValue + this.binValue + this.minBin;
             var x = i * this.barWidth;
@@ -139,12 +149,26 @@ window.onload=(function(){
             this.heights.push(distValue);
             var y = graphDimensions.height - distValue;
             var height = graphDimensions.height - y;
-            var b = new bar("histogram", x, y, this.barWidth, height, svg);
+            var b = new bar("histogram" + this.id, x, y, this.barWidth, height, svg);
             this.bars.push(b);
             b.draw(fill);
-            var binData = createDataFromDistribution(distValue, iValue, this.binValue);
-            for (n = 0; n < binData.length; n++) {
-                this.data.push(binData[n]);
+            if (this.id != "sem"){
+                var binData = createDataFromDistribution(distValue, iValue, this.binValue);
+                for (n = 0; n < binData.length; n++) {
+                    this.data.push(binData[n]);
+                }
+            }
+        }
+        this.updateSd = function(sd){
+            this.sd = sd;
+            for (var i = 0; i < this.bars.length; i++){
+                var iValue = i * this.binValue + this.binValue + this.minBin;
+                var x = i * this.barWidth;
+                var distValue = calculateNormalDistribution(mean, sd, iValue);
+                this.heights.push(distValue);
+                var y = graphDimensions.height - distValue;
+                var height = graphDimensions.height - y;
+                this.bars[i].adjustY(y, height);
             }
         }
         // Verify similar area under curve
@@ -360,8 +384,19 @@ window.onload=(function(){
         var selection = d3.selectAll(identifier).remove();
     }
    
-    
+   
+    /**
+      * Handles key events.
+      * @param {event} e The event object.
+      */
     function keyHandler(e){
+        if (document.activeElement.id == "samplesize"){
+            if (e.keyCode == 13){
+                var sampleSize = document.getElementById("samplesize").value;
+                var newSEM = POP_SD / Math.sqrt(sampleSize);
+               SDM.updateSd(newSEM);
+            }
+        }
     }
     
     /**
