@@ -33,7 +33,7 @@ window.onload=(function(){
         }
         
         var sampleBox = document.getElementById("samplesize");
-        sampleBox.addEventListener("keypress", keyHandler, false)
+        sampleBox.addEventListener("keyup", keyHandler, false);
     }
     
  
@@ -171,11 +171,11 @@ window.onload=(function(){
       */
     function keyHandler(e){
         if (document.activeElement.id == "samplesize"){
-            if (e.keyCode == 13){
+            //if (e.keyCode == 13){
                 var sampleSize = document.getElementById("samplesize").value;
                 var newSEM = POP_SD / Math.sqrt(sampleSize);
                SDM.updateSd(newSEM);
-            }
+            //}
         }
     }
 
