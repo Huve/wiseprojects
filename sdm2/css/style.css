@@ -1,0 +1,49 @@
+
+select{
+    width:90%;
+}
+
+#controlcontainer{
+    float:left;
+    width:190px;
+}
+
+#graph{
+    float:left;
+}
+
+#sample{
+    position:relative;
+    top:20px;
+    width:90%;
+    height:50px;
+    font-size:20px;
+}
+
+#samplesize{
+    position:relative;
+    width:50px;
+    float:left;
+    font-size:20px;
+    top:10px;
+}
+
+#samplesizetext{
+    position:relative;
+    width:40px;
+    float:left;
+    font-size:20px;
+    height:32px;
+    line-height:32px;
+    vertical-align:middle;
+    top:10px;
+}
+
+#stats{
+    position:relative;
+    border:2px solid black;
+    height:100px;
+    width:82%;
+    top:40px;
+    padding:5px;
+}

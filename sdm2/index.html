@@ -11,7 +11,11 @@
         <div id="graph">
         </div>
         <div id="controlcontainer">
-            <input type="text" id="samplesize" />
+        <select id="distributiontype">
+            <option value="normal">Normal (M = 100, SD = 10)</option>
+            <option value="normal2">Normal (M = 100, SD = 50)</option>
+        </select>
+            <div id="samplesizetext">N = </div><input type="text" id="samplesize" />
             <input type="button" id="sample" value="Sample" />
             <div id="stats"></div>
         </div>
