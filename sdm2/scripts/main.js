@@ -21,6 +21,7 @@ window.onload=(function(){
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
         SDM = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
         
+        // Draw a sample when the sample button is clicked
         document.getElementById('sample').onclick = function() {
            n = document.getElementById("samplesize").value;            
            var sample = sampleData(POPULATION.data, n);
@@ -34,9 +35,38 @@ window.onload=(function(){
         
         var sampleBox = document.getElementById("samplesize");
         sampleBox.addEventListener("keyup", keyHandler, false);
+      
+        // Change the population when a new option is chosen.
+        var popDropDown = document.getElementById("distributiontype");
+        popDropDown.onchange = function(){
+            changePopulation(this.value);
+        }
     }
     
- 
+    /**
+      * Updates the population shape based on the population chosen.
+      * 
+      * @param {string} newPopulation The codename for the new population.
+      */
+    function changePopulation(newPopulation){
+        var sampleSize = document.getElementById("samplesize").value;
+        if (newPopulation == "normal"){
+            POP_SD = 10;
+            POPULATION.updateSd(POP_SD);
+            SDM.updateSd(POP_SD/Math.sqrt(sampleSize));
+        }
+        else if (newPopulation == "normal2"){
+            POP_SD = 5;
+            POPULATION.updateSd(POP_SD);
+            SDM.updateSd(POP_SD/Math.sqrt(sampleSize));
+        }
+        else if (newPopulation == "normal3"){
+            POP_SD = 2;
+            POPULATION.updateSd(POP_SD);
+            SDM.updateSd(POP_SD/Math.sqrt(sampleSize));
+        }
+        POPULATION.createData();
+    }
     
     /**
       * Appends a child element to a parent.
@@ -171,11 +201,9 @@ window.onload=(function(){
       */
     function keyHandler(e){
         if (document.activeElement.id == "samplesize"){
-            //if (e.keyCode == 13){
-                var sampleSize = document.getElementById("samplesize").value;
-                var newSEM = POP_SD / Math.sqrt(sampleSize);
-               SDM.updateSd(newSEM);
-            //}
+            var sampleSize = document.getElementById("samplesize").value;
+            var newSEM = POP_SD / Math.sqrt(sampleSize);
+            SDM.updateSd(newSEM);
         }
     }
 

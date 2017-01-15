@@ -51,7 +51,10 @@ function calculateStandardDev(data){
   */
 function createDataFromDistribution(n, minBinValue, binSize){
     var data = [];
-    var probability = (n < 1) ? 1 : n
+    if (n < .5) { return data; }
+    else if (n < 1){
+        var n = 1;
+    }
     for(var s = 0; s < n; s++){
         data.push(Math.random() * binSize + minBinValue);
     }

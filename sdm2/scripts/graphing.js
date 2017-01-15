@@ -15,6 +15,8 @@ function bar(c, x, y, w, h, svg){
       * Draws the bar.
       * @param {string} fill The hexcode or color name  to color the bar.
       */
+    this.y = y;
+    this.h = h;
     this.draw = function(fill, opacity=.5){
         this.bar = svg.append('rect');
         this.bar.attr('x', x)
@@ -96,35 +98,41 @@ function histogram(svg, id, fill, mean, sd, numBins){
     this.binValue = (6 / numBins) * POP_SD; // .000005 * numBins; /*(6 / numBins) * sd;*/
     this.minBin = mean - (numBins / 2) * this.binValue;
     this.numBins = numBins;
-    for (var i = 0; i < numBins; i++){
-        var iValue = i * this.binValue + this.binValue + this.minBin;
-        var x = i * this.barWidth;
-        var distValue = calculateNormalDistribution(mean, sd, iValue);
-        this.heights.push(distValue);
-        var y = graphDimensions.height - distValue;
-        var height = graphDimensions.height - y;
-        var b = new bar("histogram" + this.id, x, y, this.barWidth, height, svg);
-        this.bars.push(b);
-        b.draw(fill);
-        if (this.id != "sem"){
-            var binData = createDataFromDistribution(distValue, iValue, this.binValue);
-            for (n = 0; n < binData.length; n++) {
-                this.data.push(binData[n]);
-            }
-        }
-    }
-    this.updateSd = function(sd){
-        this.sd = sd;
-        for (var i = 0; i < this.bars.length; i++){
+    // Create the data for the histogram.
+    this.createData = function(firstDraw){
+        this.data = [];
+        for (var i = 0; i < numBins; i++){
             var iValue = i * this.binValue + this.binValue + this.minBin;
             var x = i * this.barWidth;
-            var distValue = calculateNormalDistribution(mean, sd, iValue);
+            var distValue = calculateNormalDistribution(this.mean, this.sd, iValue);
             this.heights.push(distValue);
             var y = graphDimensions.height - distValue;
             var height = graphDimensions.height - y;
-            this.bars[i].adjustY(y, height);
-        }
+            // Draw the bar if this is the first data creation.
+            if  (firstDraw == true){
+                var b = new bar("histogram" + this.id, x, y, this.barWidth, height, svg);
+                this.bars.push(b);
+                b.draw(this.fill); 
+            }
+            else{
+                var b = this.bars[i];
+                b.adjustY(y, height);
+            }
+            if (this.id != "sem"){
+                var binData = createDataFromDistribution(distValue, iValue, this.binValue);
+                for (n = 0; n < binData.length; n++) {
+                    this.data.push(binData[n]);
+                }
+            }
+        }   
     }
+    this.updateSd = function(sd){
+        this.sd = sd;
+        this.createData();
+    }
+    // add the data to the histogram.
+    this.createData(true);
+
     // Verify similar area under curve
     /*var sum = this.heights.reduce((pv, cv) => pv+cv, 0); 
     console.log(sum);*/
