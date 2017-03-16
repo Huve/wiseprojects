@@ -7,6 +7,8 @@ window.onload=(function(){
       */
     function __init__(){
         // Initial parameter values.
+        // Bins = number of bins
+        // Pop mean - population mean, etc
         BINS = 1000;
         POP_MEAN = 100;
         POP_SD = 10;
