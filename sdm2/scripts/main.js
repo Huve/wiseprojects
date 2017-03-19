@@ -121,7 +121,7 @@ window.onload=(function(){
       */
     function displaySampleStats(sampleMean, sampleSD){
         var meanText = "Sample mean: " +  sampleMean;
-        var sdText = "Sample sd: " + sampleSD;
+        var sdText = "Sample SD: " + sampleSD;
         var container = document.getElementById("stats");
         clearContainer("stats");
         appendChildElement(meanText, container, "div");
@@ -137,7 +137,7 @@ window.onload=(function(){
       * @param {string} color The color to draw the histogram.
       * @return draws the histogram on the svg.
       */
-    function drawSampleData(svg, sampleBins, color="orange"){
+    function drawSampleData(svg, sampleBins, color="black"){
       clearFromGraph(".sample");
       var binnedSample = getBins(POPULATION, sampleBins);
       for (var i = 0; i < binnedSample.length; i++){
