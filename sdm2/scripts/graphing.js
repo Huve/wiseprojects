@@ -17,13 +17,14 @@ function bar(c, x, y, w, h, svg){
       */
     this.y = y;
     this.h = h;
-    this.draw = function(fill, opacity=.5){
+    this.draw = function(fill, opacity=1){
         this.bar = svg.append('rect');
         this.bar.attr('x', x)
         .attr('y', y)
         .attr('width', w)
         .attr('height', h)
         .attr('fill', fill)
+        .attr('stroke', fill)
         .attr('class', c)
         .style({'opacity': opacity});
     }

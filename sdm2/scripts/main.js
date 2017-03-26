@@ -242,7 +242,7 @@ window.onload=(function(){
          }
     });
 
-    $( "#slider" ).slider({ max: 99 });
+    $( "#slider" ).slider({ max: 100 });
     $( "#slider" ).slider({ min: 10 });
     $( "#slider" ).slider({ step: 1 });
     $( "#slider" ).slider({ value: 10 });
