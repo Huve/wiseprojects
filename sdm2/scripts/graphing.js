@@ -41,6 +41,21 @@ function bar(c, x, y, w, h, svg){
     return this;
 }
 
+/**
+  * Hides a distribution.
+  * @param {string} distributionClass The classname of the bars in the distribution.
+  * @param {int} graphHeight The height of the graph.
+  */
+function hideDistribution(distributionClass, graphHeight){
+    var allBars = d3.selectAll("." + distributionClass);
+    for (b = 0; b < allBars[0].length; b ++){
+        var thisBar = d3.select(allBars[0][b]);
+        thisBar.transition()
+        .attr('y', graphHeight)
+        .duration(500);
+    }        
+}
+
 
 /** 
   * Creates an svg object to graph on.
