@@ -218,6 +218,7 @@ window.onload=(function(){
             SDM.updateSd(newSEM);
         }
     }
+    
    
    
     /**
@@ -239,6 +240,7 @@ window.onload=(function(){
          },
          stop: function (event, ui){
             setSampleSize(ui.value, stop=true);
+            clearContainer("stats");
          }
     });
 
