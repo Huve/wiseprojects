@@ -14,13 +14,14 @@ window.onload=(function(){
         POP_SD = 10;
         DEFAULT_SAMPLE_SIZE = 10; 
         
-        // Set initial parameter values.
-        setSampleSize(DEFAULT_SAMPLE_SIZE);
         // Create the histograms.
         graphDimensions = calculateGraphDimensions(window.innerWidth);
         svg = createGraph("graph", graphDimensions.width, graphDimensions.height);
         POPULATION = new histogram(svg, id="population", fill="steelblue", mean=POP_MEAN, sd=POP_SD, numBins=BINS);
         SDM = new histogram(svg, id="sem", fill="green", mean=POP_MEAN, sd=POP_SD/Math.sqrt(DEFAULT_SAMPLE_SIZE), numBins=BINS);
+        
+        // Set initial parameter values.
+        setSampleSize(DEFAULT_SAMPLE_SIZE);
         
         // Draw a sample when the sample button is clicked
         document.getElementById('sample').onclick = function() {
@@ -220,10 +221,10 @@ window.onload=(function(){
         var sampleSizeHolder = document.getElementById("currentn");
         sampleSizeHolder.value = sampleSize;
         document.getElementById("samplesize").value = "N = " + sampleSize;
-       if(stop){
+       //if(stop == true){ TODO(): decide if stop matters
             var newSEM = POP_SD / Math.sqrt(sampleSize);
             SDM.updateSd(newSEM);
-        }
+       // }
     }
     
     // Clear the graph when display type is changed.
@@ -237,9 +238,10 @@ window.onload=(function(){
     $( "#slider" ).slider({
         slide: function( event, ui ) {
             setSampleSize(ui.value);
+            clearContainer("stats");
          },
          stop: function (event, ui){
-            setSampleSize(ui.value, stop=true);
+           setSampleSize(ui.value);
             clearContainer("stats");
          }
     });
