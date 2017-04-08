@@ -60,13 +60,13 @@ window.onload=(function(){
         var sampleSize = getSampleSize();
         if (newPopulation == "normal"){
             POP_SD = 10;
-            POPULATION.updateSd(POP_SD);
-            SDM.updateSd(POP_SD/Math.sqrt(sampleSize));
+            POPULATION.updateSd(POP_SD, getDistFunction());
+            SDM.updateSd(POP_SD/Math.sqrt(sampleSize), calculateNormalDistribution());
         }
-        else if (newPopulation == "normal2"){
-            POP_SD = 5;
-            POPULATION.updateSd(POP_SD);
-            SDM.updateSd(POP_SD/Math.sqrt(sampleSize));
+        else if (newPopulation == "uniform"){
+            POP_SD = 10;
+            POPULATION.updateSd(POP_SD, getDistFunction());
+            SDM.updateSd(POP_SD/Math.sqrt(sampleSize), calculateNormalDistribution());
         }
         else if (newPopulation == "normal3"){
             //POP_SD = 2;
@@ -219,12 +219,24 @@ window.onload=(function(){
       */
     function setSampleSize(sampleSize, stop=false){
         var sampleSizeHolder = document.getElementById("currentn");
+        var distFunction = getDistFunction();
         sampleSizeHolder.value = sampleSize;
         document.getElementById("samplesize").value = "N = " + sampleSize;
+        console.log(distFunction);
        //if(stop == true){ TODO(): decide if stop matters
             var newSEM = POP_SD / Math.sqrt(sampleSize);
-            SDM.updateSd(newSEM);
+            SDM.updateSd(newSEM, distFunction);
        // }
+    }
+    
+    function getDistFunction(){
+        var selectedDistribution = document.getElementById("distributiontype").value;
+        if (selectedDistribution == "normal"){
+            return calculateNormalDistribution;
+        }
+        else if (selectedDistribution == "uniform"){
+            return calculateUniformDistribution;
+        }
     }
     
     // Clear the graph when display type is changed.
@@ -242,7 +254,7 @@ window.onload=(function(){
          },
          stop: function (event, ui){
            setSampleSize(ui.value);
-            clearContainer("stats");
+           clearContainer("stats");
          }
     });
 
