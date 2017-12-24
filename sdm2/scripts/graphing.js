@@ -1,5 +1,6 @@
 // This file contains graping functions, particularly for d3.
 // Alphabetically ordered.
+// WORK IN PROGRESS
 
 
 /**
@@ -104,6 +105,8 @@ function getBins(histogram, data){
   * @return {object} this The this histogram.
   */
 function histogram(svg, id, fill, mean, sd, numBins){
+    /* histogram for graphs on the WISE site */
+    /* TODO (finish doc) */
     this.id = id;
     this.fill = fill;
     this.mean = mean;
